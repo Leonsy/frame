@@ -38,7 +38,35 @@ const register = function (server, options) {
         }
     });
 
-    server.auth.default('simple');
+    const validate = async function (decoded, request) {
+
+        const user = await User.findById([decoded.id]);
+
+        if (!user) {
+            return { isValid: false };
+        }
+
+        if (!user.isActive) {
+            return { isValid: false };
+        }
+
+        const roles = await user.hydrateRoles();
+        const credentials = {
+            scope: Object.keys(user.roles),
+            roles,
+            user
+        };
+
+        return { credentials, isValid: true };
+    };
+
+    server.auth.strategy('jwt', 'jwt',{ 
+        key: process.env.JWT_SECRET,          // Never Share your secret key
+        validate: validate,            // validate function defined above
+        verifyOptions: { algorithms: [ 'HS256' ] } // pick a strong algorithm
+    });
+
+    server.auth.default('jwt');
 };
 
 
@@ -46,7 +74,8 @@ module.exports = {
     name: 'auth',
     dependencies: [
         'hapi-auth-basic',
-        'hapi-mongo-models'
+        'hapi-mongo-models',
+        'hapi-auth-jwt2'
     ],
     register
 };

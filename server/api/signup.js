@@ -1,6 +1,7 @@
 'use strict';
 const Account = require('../models/account');
 const Boom = require('boom');
+const JWT = require('jsonwebtoken'); 
 const Config = require('../../config');
 const Joi = require('joi');
 const Mailer = require('../mailer');
@@ -93,10 +94,12 @@ const register = function (server, serverOptions) {
             const ip = request.remoteAddress;
             const session = await Session.create(`${user._id}`, ip, userAgent);
 
-            // create auth header
-
-            const credentials = `${session._id}:${session.key}`;
-            const authHeader = `Basic ${new Buffer(credentials).toString('base64')}`;
+            // create auth token
+            var sessionPlainObj = {
+                key: session.key,
+                userId: session.userId
+            }
+            var token = JWT.sign(sessionPlainObj, process.env.JWT_SECRET);
 
             return {
                 user: {
@@ -105,8 +108,7 @@ const register = function (server, serverOptions) {
                     email: user.email,
                     roles: user.roles
                 },
-                session,
-                authHeader
+                jwtToken: token
             };
         }
     });
