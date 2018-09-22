@@ -16,7 +16,7 @@
     "node": "9.x.x"
   },
   "dependencies": {
-    "bcrypt": "1.x.x",
+    "bcryptjs": "2.x.x",
     "boom": "7.x.x",
     "confidence": "3.x.x",
     "dotenv": "5.x.x",

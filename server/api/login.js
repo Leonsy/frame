@@ -1,6 +1,6 @@
 'use strict';
 const AuthAttempt = require('../models/auth-attempt');
-const Bcrypt = require('bcrypt');
+const Bcrypt = require('bcryptjs');
 const Boom = require('boom');
 const Config = require('../../config');
 const Joi = require('joi');
