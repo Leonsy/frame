@@ -76,7 +76,9 @@ const register = function (server, serverOptions) {
                 key: request.pre.session.key,
                 id: request.pre.session._id
             }
-            var token = JWT.sign(sessionPlainObj, process.env.JWT_SECRET);
+            var token = JWT.sign({
+                exp: Math.floor(Date.now() / 1000) + (24*60*60),
+                data: sessionPlainObj}, process.env.JWT_SECRET);
 
             return {
                 user: {

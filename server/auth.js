@@ -40,7 +40,7 @@ const register = function (server, options) {
 
     const validate = async function (decoded, request) {
 
-        const session = await Session.findByCredentials(decoded.id, decoded.key);
+        const session = await Session.findByCredentials(decoded.data.id, decoded.data.key);
 
         if (!session) {
             return { isValid: false };
