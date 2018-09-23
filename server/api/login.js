@@ -74,7 +74,7 @@ const register = function (server, serverOptions) {
             // create auth token
             var sessionPlainObj = {
                 key: request.pre.session.key,
-                userId: request.pre.session.userId
+                id: request.pre.session._id
             }
             var token = JWT.sign(sessionPlainObj, process.env.JWT_SECRET);
 
@@ -86,73 +86,6 @@ const register = function (server, serverOptions) {
                     roles: request.pre.user.roles
                 },
                 jwtToken: token,
-            };
-        }
-    });
-
-    server.route({
-        method: 'POST',
-        path: '/api/jwtlogin',
-        options: {
-            tags: ['api','login'],
-            description: 'Log in with username and password. [No Scope]',
-            notes: 'Log in with username and password.',
-            auth: false,
-            validate: {
-                payload: {
-                    username: Joi.string().lowercase().required(),
-                    password: Joi.string().required()
-                }
-            },
-            pre: [{
-                assign: 'abuseDetected',
-                method: async function (request, h) {
-
-                    const ip = request.remoteAddress;
-                    const username = request.payload.username;
-                    const detected = await AuthAttempt.abuseDetected(ip, username);
-
-                    if (detected) {
-                        throw Boom.badRequest('Maximum number of auth attempts reached.');
-                    }
-
-                    return h.continue;
-                }
-            }, {
-                assign: 'user',
-                method: async function (request, h) {
-
-                    const ip = request.remoteAddress;
-                    const username = request.payload.username;
-                    const password = request.payload.password;
-                    const user = await User.findByCredentials(username, password);
-
-                    if (!user) {
-                        await AuthAttempt.create(ip, username);
-
-                        throw Boom.badRequest('Credentials are invalid or account is inactive.');
-                    }
-
-                    return user;
-                }
-            }]
-        },
-        handler: function (request, h) {
-
-            const sessionId = request.pre.session._id;
-            const sessionKey = request.pre.session.key;
-            const credentials = `${sessionId}:${sessionKey}`;
-            const authHeader = `Basic ${new Buffer(credentials).toString('base64')}`;
-
-            return {
-                user: {
-                    _id: request.pre.user._id,
-                    username: request.pre.user.username,
-                    email: request.pre.user.email,
-                    roles: request.pre.user.roles
-                },
-                session: request.pre.session,
-                authHeader
             };
         }
     });

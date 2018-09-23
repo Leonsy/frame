@@ -40,7 +40,15 @@ const register = function (server, options) {
 
     const validate = async function (decoded, request) {
 
-        const user = await User.findById([decoded.id]);
+        const session = await Session.findByCredentials(decoded.id, decoded.key);
+
+        if (!session) {
+            return { isValid: false };
+        }
+
+        session.updateLastActive();
+
+        const user = await User.findById(session.userId);
 
         if (!user) {
             return { isValid: false };
@@ -54,6 +62,7 @@ const register = function (server, options) {
         const credentials = {
             scope: Object.keys(user.roles),
             roles,
+            session,
             user
         };
 

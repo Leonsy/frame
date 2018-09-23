@@ -97,7 +97,7 @@ const register = function (server, serverOptions) {
             // create auth token
             var sessionPlainObj = {
                 key: session.key,
-                userId: session.userId
+                id: session._id
             }
             var token = JWT.sign(sessionPlainObj, process.env.JWT_SECRET);
 
