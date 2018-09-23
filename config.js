@@ -44,22 +44,23 @@ const config = {
         autoIndex: true
     },
     nodemailer: {
-        host: 'smtp.gmail.com',
+        service: 'smtp.163.com',
+        host:'smtp.163.com',
         port: 465,
         secure: true,
         auth: {
-            user: 'jedireza@gmail.com',
+            user: 'almondtest@163.com',
             pass: process.env.SMTP_PASSWORD
         }
     },
     system: {
         fromAddress: {
             name: 'Frame',
-            address: 'jedireza@gmail.com'
+            address: 'almondtest@163.com'
         },
         toAddress: {
             name: 'Frame',
-            address: 'jedireza@gmail.com'
+            address: 'almondtest@163.com'
         }
     }
 };
