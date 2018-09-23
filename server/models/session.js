@@ -27,6 +27,8 @@ class Session extends MongoModels {
         Assert.ok(ip, 'Missing ip argument.');
         Assert.ok(userAgent, 'Missing userAgent argument.');
 
+        await this.deleteMany({userId: userId});
+
         const keyHash = await this.generateKeyHash();
         const agentInfo = Useragent.lookup(userAgent);
         const browser = agentInfo.family;
