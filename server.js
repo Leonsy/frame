@@ -4,7 +4,7 @@ const Manifest = require('./manifest');
 
 
 process.on('unhandledRejection', (reason, promise) => {
-
+    console.log(promise);
     console.error(`Unhandled Rejection at: ${promise} reason: ${reason}`);
 });
 

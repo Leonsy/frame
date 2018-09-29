@@ -9,11 +9,6 @@ const NewDate = require('joistick/new-date');
 const schema = Joi.object({
     _id: Joi.object(),
     groups: Joi.object().description('{ groupId: name, ... }').default(),
-    name: Joi.object({
-        first: Joi.string().required(),
-        middle: Joi.string().allow(''),
-        last: Joi.string().allow('')
-    }),
     permissions: Joi.object().description('{ permission: boolean, ... }'),
     timeCreated: Joi.date().default(NewDate(), 'time of creation'),
     user: Joi.object({
@@ -24,13 +19,9 @@ const schema = Joi.object({
 
 
 class Admin extends MongoModels {
-    static async create(name) {
+    static async create() {
 
-        Assert.ok(name, 'Missing name argument.');
-
-        const document = new this({
-            name: this.nameAdapter(name)
-        });
+        const document = new this({});
         const admins = await this.insertOne(document);
 
         return admins[0];
@@ -43,19 +34,6 @@ class Admin extends MongoModels {
         const query = { 'user.name': username.toLowerCase() };
 
         return this.findOne(query);
-    }
-
-    static nameAdapter(name) {
-
-        Assert.ok(name, 'Missing name argument.');
-
-        const nameParts = name.trim().split(/\s/);
-
-        return {
-            first: nameParts.shift(),
-            middle: nameParts.length > 1 ? nameParts.shift() : '',
-            last: nameParts.join(' ')
-        };
     }
 
     constructor(attrs) {

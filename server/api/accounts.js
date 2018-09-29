@@ -3,6 +3,7 @@ const Account = require('../models/account');
 const Boom = require('boom');
 const Joi = require('joi');
 const NoteEntry = require('../models/note-entry');
+const TodoEntry = require('../models/todo-entry');
 const Preware = require('../preware');
 const Status = require('../models/status');
 const StatusEntry = require('../models/status-entry');
@@ -142,6 +143,50 @@ const register = function (server, serverOptions) {
             }
 
             return { message: 'Success.' };
+        }
+    });
+
+    server.route({
+        method: 'POST',
+        path: '/api/accounts/{id}/todo',
+        options: {
+            tags: ['api','accounts'],
+            description: 'Edit todo items for a user. [Admin Scope]',
+            notes: 'Edit todo items for a user',
+            auth: {
+                scope: 'admin'
+            },
+            validate: {
+                payload: {
+                    data: Joi.array().items(TodoEntry.schema).required().description('arrary of todo items')                 
+                },
+                params: {
+                    id : Joi.string().required().description('the id to add a new note onto an account')
+                }
+            }
+        },
+        handler: async function (request, h) {
+
+            const id = request.params.id;     
+            
+            const todoEntries = request.payload.data.map( item => new TodoEntry({
+                description: item.description,
+                fileUrl: item.fileUrl,
+                isFinished: item.isFinished
+            }))
+
+            const update = {
+                $set: {
+                    todos: todoEntries
+                }
+            };
+            const account = await Account.findByIdAndUpdate(id, update);
+
+            if (!account) {
+                throw Boom.notFound('Account not found.');
+            }
+
+            return account;
         }
     });
 

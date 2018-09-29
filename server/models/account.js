@@ -6,17 +6,20 @@ const NewArray = require('joistick/new-array');
 const NewDate = require('joistick/new-date');
 const NoteEntry = require('./note-entry');
 const StatusEntry = require('./status-entry');
+const TodoEntry = require('./todo-entry');
 
 
 const schema = Joi.object({
     _id: Joi.object(),
-    name: Joi.object({
-        first: Joi.string().required(),
-        middle: Joi.string().allow(''),
-        last: Joi.string().allow('')
-    }),
+    maleName: Joi.string(),
+    femaleName: Joi.string(),
+    weddingDate: Joi.date(),
+    mainLocation: Joi.string(),
+    plan: Joi.string(),
     notes: Joi.array().items(NoteEntry.schema)
         .default(NewArray(), 'array of notes'),
+    todos: Joi.array().items(TodoEntry.schema)
+        .default(NewArray(), 'array of todo'),
     status: Joi.object({
         current: StatusEntry.schema,
         log: Joi.array().items(StatusEntry.schema)
@@ -47,6 +50,21 @@ class Account extends MongoModels {
 
         return this.findOne(query);
     }
+
+    async linkUser(id, name) {
+
+        Assert.ok(id, 'Missing id argument.');
+        Assert.ok(name, 'Missing name argument.');
+
+        const update = {
+            $set: {
+                user: { id, name }
+            }
+        };
+
+        return await Account.findByIdAndUpdate(this._id, update);
+    }
+}
 
 Account.collectionName = 'accounts';
 Account.schema = schema;

@@ -62,11 +62,6 @@ const main = async function () {
         groups: {
             root: 'Root'
         },
-        name: {
-            first: 'Root',
-            middle: '',
-            last: 'Admin'
-        },
         user: {
             id: '000000000000000000000000',
             name: 'root'
@@ -81,8 +76,7 @@ const main = async function () {
         password: passwordHash.hash,
         roles: {
             admin: {
-                id: '111111111111111111111111',
-                name: 'Root Admin'
+                id: '111111111111111111111111'
             }
         },
         username: 'root'
