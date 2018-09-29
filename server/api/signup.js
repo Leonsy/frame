@@ -59,7 +59,7 @@ const register = function (server, serverOptions) {
             // create and link account and user documents
 
             let [account, user] = await Promise.all([
-                Account.create(request.payload.name),
+                Account.create(),
                 User.create(
                     request.payload.username,
                     request.payload.password,
@@ -70,7 +70,7 @@ const register = function (server, serverOptions) {
 
             [account, user] = await Promise.all([
                 account.linkUser(`${user._id}`, user.username),
-                user.linkAccount(`${account._id}`, account.fullName())
+                user.linkAccount(`${account._id}`)
             ]);
 
             // send welcome email

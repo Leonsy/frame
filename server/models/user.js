@@ -20,12 +20,10 @@ const schema = Joi.object({
     }),
     roles: Joi.object({
         admin: Joi.object({
-            id: Joi.string().required(),
-            name: Joi.string().required()
+            id: Joi.string().required()
         }),
         account: Joi.object({
-            id: Joi.string().required(),
-            name: Joi.string().required()
+            id: Joi.string().required()
         })
     }).default(),
     timeCreated: Joi.date().default(NewDate(), 'time of creation'),
@@ -146,28 +144,26 @@ class User extends MongoModels {
         return this._roles;
     }
 
-    async linkAccount(id, name) {
+    async linkAccount(id) {
 
         Assert.ok(id, 'Missing id argument.');
-        Assert.ok(name, 'Missing name argument.');
 
         const update = {
             $set: {
-                'roles.account': { id, name }
+                'roles.account': { id }
             }
         };
 
         return await User.findByIdAndUpdate(this._id, update);
     }
 
-    async linkAdmin(id, name) {
+    async linkAdmin(id) {
 
         Assert.ok(id, 'Missing id argument.');
-        Assert.ok(name, 'Missing name argument.');
 
         const update = {
             $set: {
-                'roles.admin': { id, name }
+                'roles.admin': { id }
             }
         };
 

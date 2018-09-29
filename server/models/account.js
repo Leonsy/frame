@@ -31,13 +31,9 @@ const schema = Joi.object({
 
 
 class Account extends MongoModels {
-    static async create(name) {
+    static async create() {
 
-        Assert.ok(name, 'Missing name argument.');
-
-        const document = new this({
-            name: this.nameAdapter(name.trim())
-        });
+        const document = new this({});
         const accounts = await this.insertOne(document);
 
         return accounts[0];
@@ -51,51 +47,6 @@ class Account extends MongoModels {
 
         return this.findOne(query);
     }
-
-    static nameAdapter(name) {
-
-        Assert.ok(name, 'Missing name argument.');
-
-        const nameParts = name.trim().split(/\s/);
-
-        return {
-            first: nameParts.shift(),
-            middle: nameParts.length > 1 ? nameParts.shift() : '',
-            last: nameParts.join(' ')
-        };
-    }
-
-    fullName() {
-
-        return `${this.name.first} ${this.name.last}`.trim();
-    }
-
-    async linkUser(id, name) {
-
-        Assert.ok(id, 'Missing id argument.');
-        Assert.ok(name, 'Missing name argument.');
-
-        const update = {
-            $set: {
-                user: { id, name }
-            }
-        };
-
-        return await Account.findByIdAndUpdate(this._id, update);
-    }
-
-    async unlinkUser() {
-
-        const update = {
-            $unset: {
-                user: undefined
-            }
-        };
-
-        return await Account.findByIdAndUpdate(this._id, update);
-    }
-}
-
 
 Account.collectionName = 'accounts';
 Account.schema = schema;
