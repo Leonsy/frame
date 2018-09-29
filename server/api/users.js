@@ -45,63 +45,6 @@ const register = function (server, serverOptions) {
 
 
     server.route({
-        method: 'POST',
-        path: '/api/users',
-        options: {
-            tags: ['api','users'],
-            description: 'Create a new user. [Root Scope]',
-            notes: 'Create a new user. This does not map this user to an account.',
-            auth: {
-                scope: 'admin'
-            },
-            validate: {
-                payload: {
-                    username: Joi.string().token().lowercase().required(),
-                    password: Joi.string().required(),
-                    email: Joi.string().email().lowercase().required()
-                }
-            },
-            pre: [
-                Preware.requireAdminGroup('root'),
-                {
-                    assign: 'usernameCheck',
-                    method: async function (request, h) {
-
-                        const user = await User.findByUsername(request.payload.username);
-
-                        if (user) {
-                            throw Boom.conflict('Username already in use.');
-                        }
-
-                        return h.continue;
-                    }
-                }, {
-                    assign: 'emailCheck',
-                    method: async function (request, h) {
-
-                        const user = await User.findByEmail(request.payload.email);
-
-                        if (user) {
-                            throw Boom.conflict('Email already in use.');
-                        }
-
-                        return h.continue;
-                    }
-                }
-            ]
-        },
-        handler: async function (request, h) {
-
-            const username = request.payload.username;
-            const password = request.payload.password;
-            const email = request.payload.email;
-
-            return await User.create(username, password, email);
-        }
-    });
-
-
-    server.route({
         method: 'GET',
         path: '/api/users/{id}',
         options: {

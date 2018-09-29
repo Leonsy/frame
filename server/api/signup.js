@@ -24,7 +24,8 @@ const register = function (server, serverOptions) {
                     name: Joi.string().required(),
                     email: Joi.string().email().lowercase().required(),
                     username: Joi.string().token().lowercase().required(),
-                    password: Joi.string().required()
+                    password: Joi.string().required(),
+                    wechat: Joi.string()
                 }
             },
             pre: [{
@@ -62,7 +63,8 @@ const register = function (server, serverOptions) {
                 User.create(
                     request.payload.username,
                     request.payload.password,
-                    request.payload.email
+                    request.payload.email,
+                    request.payload.wechat ? request.payload.wechat : null
                 )
             ]);
 

@@ -11,6 +11,7 @@ const NewDate = require('joistick/new-date');
 const schema = Joi.object({
     _id: Joi.object(),
     email: Joi.string().email().lowercase().required(),
+    wechat: Joi.string(),
     isActive: Joi.boolean().default(true),
     password: Joi.string(),
     resetPassword: Joi.object({
@@ -33,7 +34,7 @@ const schema = Joi.object({
 
 
 class User extends MongoModels {
-    static async create(username, password, email) {
+    static async create(username, password, email, wechat) {
 
         Assert.ok(username, 'Missing username argument.');
         Assert.ok(password, 'Missing password argument.');
@@ -44,7 +45,8 @@ class User extends MongoModels {
             email,
             isActive: true,
             password: passwordHash.hash,
-            username
+            username,
+            wechat
         });
         const users = await this.insertOne(document);
 
